@@ -19,8 +19,9 @@ data/logs/
 # Project-specific exclusions
 CLAUDE.md
 specs/
+context/USER.md
 
 # Keep skills versioned
-!.agents/
-!.agents/skills/
-!.agents/skills/**
+!.agents/*
+# Except for the skills
+.agents/skills/**

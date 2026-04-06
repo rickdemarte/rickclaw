@@ -16,7 +16,7 @@
   "^(quem [eé] voc[eê]|qual (o )?seu nome)\\b": [
     "Eu sou o RickClaw. Inteligência artificial pessoal do Ribeiro, rodando localmente na máquina dele pra automação, produtividade e trabalho técnico sem frescura.",
     "O nome é RickClaw. Agente pessoal do Ribeiro, feito pra operar no desktop dele e resolver bronca de TI, código, segurança e o que mais aparecer.",
-    "RickClaw. IA pessoal do Henrique Ribeiro, servidor da UFSC. Nada de nuvem gourmet: eu moro na máquina dele e trabalho direto ao ponto."
+    "RickClaw. IA pessoal do Ribeiro, servidor da UFSC. Nada de nuvem gourmet: eu moro na máquina dele e trabalho direto ao ponto."
   ],
   "^(tudo bem|como voc[eê] est[aá]|como vai|tudo (sussa|tranquilo|ok))\\b": [
     "Tudo 100% por aqui. E você, sobreviveu a mais um dia?",
