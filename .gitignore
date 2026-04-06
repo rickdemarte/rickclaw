@@ -1,0 +1,26 @@
+# Environment and local machine state
+.env
+.env.*
+.claude/
+.codex
+
+# Dependencies and build output
+node_modules/
+dist/
+
+# Runtime data and logs
+tmp/
+data/.keepuniq
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/logs/
+
+# Project-specific exclusions
+CLAUDE.md
+specs/
+
+# Keep skills versioned
+!.agents/
+!.agents/skills/
+!.agents/skills/**

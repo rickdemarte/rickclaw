@@ -1,0 +1,32 @@
+# App Config
+NODE_ENV=development
+PORT=3128
+
+# Security (Telegram & Web Auth)
+# Use comma-separated Telegram User IDs to whitelist. Example: 12345678,98765432
+TELEGRAM_ALLOWED_USER_IDS=
+
+# Username and password for the Web Interface login.
+# Password for the Web Interface login.
+# Accepts plaintext OR a bcrypt hash (recommended).
+# To generate a hash, run:
+#   node -e "console.log(require('bcrypt').hashSync('sua-senha-aqui', 10))"
+# Then paste the output here (starts with $2b$10$...).
+WEB_CHAT_USERNAME=seu-nome-aqui
+WEB_CHAT_PASSWORD=sua-senha
+
+# Database
+# Memory Window Size limits the SQLite retrieval context for the LLM
+MEMORY_WINDOW_SIZE=200
+
+# Settings
+MAX_ITERATIONS=30
+DEFAULT_PROVIDER=openai
+LOG_PROMPTS=true
+
+
+AWS_DEFAULT_REGION=
+SES_SENDER_EMAIL=
+SES_SENDER_NAME=
+RECIPIENT_PERSONAL=
+RECIPIENT_CORPORATE=

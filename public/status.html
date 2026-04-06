@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RickClaw - Status</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --radius: 12px;
+      --font: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .header .sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Global status banner */
+    .banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 16px;
+      border: 1px solid var(--border);
+    }
+    .banner.ok       { background: rgba(63,185,80,0.1);  color: var(--green); border-color: rgba(63,185,80,0.3); }
+    .banner.degraded  { background: rgba(248,81,73,0.1);  color: var(--red);   border-color: rgba(248,81,73,0.3); }
+    .banner.loading   { background: var(--surface); color: var(--text-muted); }
+
+    .banner .icon { font-size: 22px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Row items inside cards */
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    .row + .row {
+      border-top: 1px solid var(--border);
+    }
+    .row .label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .row .label .icon { font-size: 18px; }
+    .row .value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .badge.ok      { background: rgba(63,185,80,0.15);  color: var(--green); }
+    .badge.ok .dot  { background: var(--green); }
+    .badge.warn         { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge.warn .dot    { background: var(--yellow); }
+    .badge.error        { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge.error .dot   { background: var(--red); }
+    .badge.muted        { background: rgba(139,148,158,0.1); color: var(--text-muted); }
+    .badge.muted .dot   { background: var(--text-muted); }
+
+    .badge.default-tag {
+      margin-left: 6px;
+      padding: 2px 6px;
+      font-size: 10px;
+      background: rgba(88,166,255,0.15);
+      color: var(--accent);
+      border-radius: 4px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Refresh button */
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .refresh-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>RickClaw Status</h1>
+      <div class="sub">Monitoramento do agente</div>
+    </div>
+
+    <div id="banner" class="banner loading">
+      <span class="icon">...</span>
+      <span>Carregando...</span>
+    </div>
+
+    <!-- System -->
+    <div class="card">
+      <div class="card-title">Sistema</div>
+      <div class="row">
+        <span class="label"><span class="icon">🗄️</span> Database</span>
+        <span id="db-badge" class="value">-</span>
+      </div>
+      <div class="row">
+        <span class="label"><span class="icon">⏱️</span> Uptime</span>
+        <span id="uptime" class="value">-</span>
+      </div>
+      <div class="row">
+        <span class="label"><span class="icon">🕐</span> Timestamp</span>
+        <span id="timestamp" class="value">-</span>
+      </div>
+    </div>
+
+    <!-- Telegram -->
+    <div class="card">
+      <div class="card-title">Telegram</div>
+      <div class="row">
+        <span class="label"><span class="icon">🤖</span> Bot</span>
+        <span id="telegram-badge" class="value">-</span>
+      </div>
+    </div>
+
+    <!-- Providers -->
+    <div class="card">
+      <div class="card-title">Providers</div>
+      <div id="providers-list">-</div>
+    </div>
+
+    <div class="footer">
+      <button class="refresh-btn" onclick="load()">Atualizar</button>
+      &nbsp;&middot;&nbsp;
+      <a href="/">Voltar ao Chat</a>
+    </div>
+  </div>
+
+  <script>
+    function badge(cssClass, label) {
+      return '<span class="badge ' + cssClass + '"><span class="dot"></span>' + label + '</span>';
+    }
+
+    function formatUptime(seconds) {
+      var d = Math.floor(seconds / 86400);
+      var h = Math.floor((seconds % 86400) / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = seconds % 60;
+      var parts = [];
+      if (d > 0) parts.push(d + 'd');
+      if (h > 0) parts.push(h + 'h');
+      if (m > 0) parts.push(m + 'min');
+      if (parts.length === 0) parts.push(s + 's');
+      return parts.join(' ');
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    async function load() {
+      var bannerEl = document.getElementById('banner');
+      bannerEl.className = 'banner loading';
+      bannerEl.innerHTML = '<span class="icon">...</span><span>Carregando...</span>';
+
+      try {
+        var res = await fetch('/health');
+        var data = await res.json();
+
+        // Banner
+        if (data.status === 'ok') {
+          bannerEl.className = 'banner ok';
+          bannerEl.innerHTML = '<span class="icon">✅</span><span>Todos os sistemas operacionais</span>';
+        } else {
+          bannerEl.className = 'banner degraded';
+          bannerEl.innerHTML = '<span class="icon">⚠️</span><span>Sistema degradado</span>';
+        }
+
+        // Database
+        document.getElementById('db-badge').innerHTML =
+          data.database === 'ok' ? badge('ok', 'Operacional') : badge('error', 'Erro');
+
+        // Uptime
+        document.getElementById('uptime').textContent = formatUptime(data.uptime);
+
+        // Timestamp
+        var ts = new Date(data.timestamp);
+        document.getElementById('timestamp').textContent = ts.toLocaleString('pt-BR');
+
+        // Telegram
+        var tgMap = {
+          running:        { css: 'ok',    label: 'Online' },
+          stopped:        { css: 'error', label: 'Parado' },
+          not_configured: { css: 'muted', label: 'Nao configurado' }
+        };
+        var tg = tgMap[data.telegram] || { css: 'muted', label: data.telegram };
+        document.getElementById('telegram-badge').innerHTML = badge(tg.css, tg.label);
+
+        // Providers
+        var html = '';
+        var provEntries = Object.entries(data.providers);
+        for (var i = 0; i < provEntries.length; i++) {
+          var name = provEntries[i][0];
+          var status = provEntries[i][1];
+          var isDefault = name === data.defaultProvider;
+          var provBadge = status === 'configured' ? badge('ok', 'Configurado') : badge('warn', 'Sem API key');
+          var defaultTag = isDefault ? '<span class="badge default-tag">PADRAO</span>' : '';
+
+          html += '<div class="row">';
+          html += '  <span class="label"><span class="icon">🧠</span> ' + capitalize(name) + defaultTag + '</span>';
+          html += '  <span class="value">' + provBadge + '</span>';
+          html += '</div>';
+        }
+        document.getElementById('providers-list').innerHTML = html;
+
+      } catch (e) {
+        bannerEl.className = 'banner degraded';
+        bannerEl.innerHTML = '<span class="icon">❌</span><span>Falha ao conectar</span>';
+      }
+    }
+
+    load();
+    setInterval(load, 30000);
+  </script>
+</body>
+</html>
