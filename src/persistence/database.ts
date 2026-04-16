@@ -178,6 +178,13 @@ export class DbConnection {
       );
       
       CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);
+
+      -- Trigger to automatically update conversation's updated_at on message insert
+      CREATE TRIGGER IF NOT EXISTS update_conversation_timestamp 
+      AFTER INSERT ON messages
+      BEGIN
+        UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.conversation_id;
+      END;
     `);
 
     // Migrations para bancos existentes — adiciona colunas se ainda nao existem

@@ -20,12 +20,24 @@ export class UsageTracker {
   private repository = new UsageRepository();
   private pricingCache = new FileCache<PricingConfig>(
     path.join(process.cwd(), 'data', 'model-pricing.json'),
-    (raw) => JSON.parse(raw)
+    (raw) => JSON.parse(raw),
+    600 // 10 minutes TTL for pricing data
   );
+  private cachedPricing: PricingConfig | null = null;
+  private lastPricingLoad: number = 0;
 
   private loadPricing(): PricingConfig | null {
+    const now = Date.now();
+    
+    // Use in-memory cache with TTL to avoid file system checks on every call
+    if (this.cachedPricing !== null && now - this.lastPricingLoad < 600000) {
+      return this.cachedPricing;
+    }
+    
     try {
-      return this.pricingCache.get();
+      this.cachedPricing = this.pricingCache.get();
+      this.lastPricingLoad = now;
+      return this.cachedPricing;
     } catch (err: any) {
       logger.error(`[UsageTracker] Error reading model-pricing.json: ${err.message}`);
       return null;

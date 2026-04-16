@@ -6,7 +6,7 @@ import { UsageTracker } from '../services/usage-tracker';
 
 export class AgentLoop {
   private maxIterations: number;
-
+  
   constructor(
     private provider: IProvider, 
     private toolRegistry: ToolRegistry,
@@ -22,8 +22,13 @@ export class AgentLoop {
   public async run(systemPrompt: string, memoryContext: IMessage[], newUserInput: string, conversationId: string): Promise<IMessage[]> {
     logger.info('[AgentLoop] Starting ReAct iteration block');
     
-    // We clone memoryContext to not aggressively mutate the passed slice until final flush if needed
-    const currentContext = [...memoryContext];
+    // Optimize: avoid cloning entire array upfront, build incrementally
+    const currentContext: IMessage[] = [];
+    
+    // Copy existing context efficiently
+    for (let i = 0; i < memoryContext.length; i++) {
+      const msg = memoryContext[i]; if (msg) currentContext.push(msg);
+    }
     
     // Append the current fresh input
     currentContext.push({

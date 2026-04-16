@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 90
+    },
+    "auditLog": "/workspace/data/logs/.a46a1b789aa41588aa2811564b6228d19be9ed11-audit.json",
+    "files": [
+        {
+            "date": 1776369049192,
+            "name": "/workspace/data/logs/rickclaw-2026-04-16.log",
+            "hash": "932d1a784ad0427945d2ed9bdc662323683b3c06953abd0cfbf192e243df22ef"
+        }
+    ],
+    "hashType": "sha256"
+}
