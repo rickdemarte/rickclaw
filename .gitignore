@@ -1,3 +1,6 @@
+
+node_modules/
+
 # Database files
 *.db
 *.db-shm
@@ -5,5 +8,3 @@
 
 # Log files
 data/logs/
-
-node_modules
