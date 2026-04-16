@@ -1,3 +1,10 @@
-```
+
 node_modules/
-```
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Log files
+data/logs/
