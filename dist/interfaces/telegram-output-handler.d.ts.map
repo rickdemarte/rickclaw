@@ -1,0 +1,1 @@
+{"version":3,"file":"telegram-output-handler.d.ts","sourceRoot":"","sources":["../../src/interfaces/telegram-output-handler.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,GAAG,EAAa,MAAM,QAAQ,CAAC;AAIxC,qBAAa,qBAAqB;IAGnB,OAAO,CAAC,GAAG;IAFvB,OAAO,CAAC,cAAc,CAAQ;gBAEV,GAAG,EAAE,GAAG;IAEf,YAAY,CAAC,MAAM,EAAE,MAAM,GAAG,MAAM,EAAE,QAAQ,EAAE,MAAM;IAkCnE,OAAO,CAAC,WAAW;CAsBrB"}

@@ -11,12 +11,18 @@ interface RouterResponse {
 }
 
 export class SkillRouter {
-  private dictionaryCache = new FileCache<Record<string, string[]>>(
-    path.join(process.cwd(), 'data', 'smalltalk-dictionary.json'),
-    (raw) => JSON.parse(raw)
-  );
+  private dictionaryCache: FileCache<Record<string, string[]>>;
+  private compiledRegexCache: Map<string, RegExp> = new Map();
+  private smalltalkPatterns: Array<{ regex: RegExp; replies: string[] }> = [];
+  private patternsLoaded: boolean = false;
 
-  constructor(private lightweightProvider: IProvider) {}
+  constructor(private lightweightProvider: IProvider) {
+    this.dictionaryCache = new FileCache<Record<string, string[]>>(
+      path.join(process.cwd(), 'data', 'smalltalk-dictionary.json'),
+      (raw) => JSON.parse(raw),
+      60 // 1 minute TTL for smalltalk dictionary
+    );
+  }
 
   public async route(input: string, availableSkills: ISkillMeta[]): Promise<RoutingResult> {
     const trimmed = input.trim();
@@ -107,17 +113,18 @@ export class SkillRouter {
 
   private trySmalltalk(input: string): string | null {
     try {
-       const dic = this.dictionaryCache.get();
-       if (!dic) return null;
+       // Load and compile patterns lazily
+       if (!this.patternsLoaded) {
+         this.loadAndCompilePatterns();
+       }
        
-       for (const [regexStr, replies] of Object.entries(dic)) {
-          const match = regexStr.match(/^\/(.*?)\/([a-z]*)$/);
-          let rx: RegExp;
-          
-          if (match) rx = new RegExp(match[1] || '', match[2] || undefined);
-          else rx = new RegExp(regexStr);
+       if (this.smalltalkPatterns.length === 0) {
+         return null;
+       }
 
-          if (rx.test(input.trim())) {
+       const trimmedInput = input.trim();
+       for (const { regex, replies } of this.smalltalkPatterns) {
+          if (regex.test(trimmedInput)) {
              const randIdx = Math.floor(Math.random() * replies.length);
              let chosen = replies[randIdx] || null;
              
@@ -132,5 +139,28 @@ export class SkillRouter {
     }
 
     return null;
+  }
+
+  private loadAndCompilePatterns(): void {
+    this.patternsLoaded = true;
+    const dic = this.dictionaryCache.get();
+    if (!dic) return;
+    
+    this.smalltalkPatterns = [];
+    this.compiledRegexCache.clear();
+    
+    for (const [regexStr, replies] of Object.entries(dic)) {
+       const match = regexStr.match(/^\/(.*?)\/([a-z]*)$/);
+       let rx: RegExp;
+       
+       if (match) {
+         rx = new RegExp(match[1] || '', match[2] || undefined);
+       } else {
+         rx = new RegExp(regexStr);
+       }
+       
+       this.compiledRegexCache.set(regexStr, rx);
+       this.smalltalkPatterns.push({ regex: rx, replies });
+    }
   }
 }

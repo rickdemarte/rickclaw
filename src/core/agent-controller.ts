@@ -20,6 +20,9 @@ export class AgentController {
    private usageTracker: UsageTracker;
    private readonly contextDir = path.join(process.cwd(), 'context');
    private contextCaches: { label: string; cache: FileCache<string> }[];
+   private cachedSystemPrompt: string | null = null;
+   private lastPromptBuild: number = 0;
+   private readonly promptTtlMs: number = 60000; // 1 minute TTL for system prompt
 
    constructor() {
       this.memoryMgr = new MemoryManager();
@@ -28,10 +31,10 @@ export class AgentController {
       this.usageTracker = new UsageTracker();
 
       this.contextCaches = [
-         { label: 'PERSONALITY & RULES',      cache: new FileCache(path.join(this.contextDir, 'SOUL.md'),   (raw) => raw.trim()) },
-         { label: 'USER PROFILE',             cache: new FileCache(path.join(this.contextDir, 'USER.md'),   (raw) => raw.trim()) },
-         { label: 'SKILL SYSTEM INSTRUCTIONS', cache: new FileCache(path.join(this.contextDir, 'SKILLS.md'), (raw) => raw.trim()) },
-         { label: 'PERSISTENT MEMORY',         cache: new FileCache(path.join(this.contextDir, 'MEMORY.md'), (raw) => raw.trim()) },
+         { label: 'PERSONALITY & RULES',      cache: new FileCache(path.join(this.contextDir, 'SOUL.md'),   (raw) => raw.trim(), 300) },
+         { label: 'USER PROFILE',             cache: new FileCache(path.join(this.contextDir, 'USER.md'),   (raw) => raw.trim(), 300) },
+         { label: 'SKILL SYSTEM INSTRUCTIONS', cache: new FileCache(path.join(this.contextDir, 'SKILLS.md'), (raw) => raw.trim(), 300) },
+         { label: 'PERSISTENT MEMORY',         cache: new FileCache(path.join(this.contextDir, 'MEMORY.md'), (raw) => raw.trim(), 60) },
       ];
 
       this.registerCoreTools();
@@ -49,9 +52,16 @@ export class AgentController {
 
    /**
     * Loads context files (SOUL.md, USER.md, SKILLS.md, MEMORY.md) into the system prompt.
-    * Uses mtime-based caching — re-reads only when the file changes on disk.
+    * Uses mtime-based caching with TTL — re-reads only when the file changes or TTL expires.
     */
    private buildSystemPrompt(): string {
+      const now = Date.now();
+      
+      // Return cached prompt if still valid within TTL
+      if (this.cachedSystemPrompt !== null && now - this.lastPromptBuild < this.promptTtlMs) {
+        return this.cachedSystemPrompt;
+      }
+      
       const sections: string[] = [];
 
       for (const { label, cache } of this.contextCaches) {
@@ -62,10 +72,13 @@ export class AgentController {
       }
 
       if (sections.length === 0) {
-         return 'You are RickClaw, an intelligent personal agent. You run locally on the user\'s desktop.';
+         this.cachedSystemPrompt = 'You are RickClaw, an intelligent personal agent. You run locally on the user\'s desktop.';
+      } else {
+         this.cachedSystemPrompt = sections.join('\n\n---\n\n');
       }
-
-      return sections.join('\n\n---\n\n');
+      
+      this.lastPromptBuild = now;
+      return this.cachedSystemPrompt;
    }
 
    public clearMemory(userId: string) {

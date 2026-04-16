@@ -19,9 +19,7 @@ export class MessageRepository {
       message.name || null
     );
 
-    // Update conversation's updated_at timestamp
-    const updateStmt = this.db.prepare(`UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?`);
-    updateStmt.run(message.conversation_id);
+    // Trigger automatically updates conversation's updated_at timestamp
   }
 
   // Gets the last N messages for a conversation

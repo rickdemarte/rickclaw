@@ -1,0 +1,1 @@
+{"version":3,"file":"openai-provider.d.ts","sourceRoot":"","sources":["../../src/core/openai-provider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,UAAU,CAAC;AACrC,OAAO,EAAE,wBAAwB,EAAE,MAAM,8BAA8B,CAAC;AAQxE,qBAAa,cAAe,SAAQ,wBAAwB;IAC1D,SAAS,CAAC,QAAQ,CAAC,YAAY,YAAY;gBAE/B,IAAI,GAAE,SAAqB;CAGxC"}

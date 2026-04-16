@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/workspace/data/logs/.4dafc0996fb35455d18f8674ef8726a04a1897a7-audit.json",
+    "files": [
+        {
+            "date": 1776369049208,
+            "name": "/workspace/data/logs/prompts-2026-04-16.log",
+            "hash": "f0ecf46a109590cdf949eeac5e27a1c35675a7b494bf11f173c377e871bf154b"
+        }
+    ],
+    "hashType": "sha256"
+}
